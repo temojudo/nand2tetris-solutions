@@ -1,6 +1,6 @@
-from push import *
-from pop import *
-from alu import *
+from app.push import *
+from app.pop import *
+from app.alu import *
 
 
 def get_out_filename(vm_file_name):
@@ -57,8 +57,3 @@ def translate(vm_file_name: str) -> None:
     vm_commands = parse_vm(vm_file_name)
     out_filename, static_filename = get_out_filename(vm_file_name)
     translate_vm_commands_to_asm_commands(vm_commands, out_filename, static_filename)
-
-
-if __name__ == '__main__':
-    filename = input("Enter vm file path: ")
-    translate(filename)
