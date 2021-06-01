@@ -1,0 +1,84 @@
+class IntStack {
+
+    field Array elems;
+    field int allocSize;
+    field int arraySize;
+
+    constructor IntStack new(int maxSize) {
+        let allocSize = maxSize;
+        let arraySize = 0;
+
+        let elems = Array.new(allocSize);
+        return this;
+    }
+
+    method int peek() {
+        if (arraySize > 0) {
+            return elems[arraySize - 1];
+        } else {
+            return null;
+        }
+    }
+
+    method void pop() {
+        if (arraySize > 0) {
+            let arraySize = arraySize - 1;
+        }
+
+        return;
+    }
+
+    method void push(int value) {
+        var int index;
+
+        if (arraySize = allocSize) {
+            let index = 1;
+            while (index < arraySize) {
+                let elems[index - 1] = elems[index];
+                let index = index + 1;
+            }
+            do pop();
+        }
+
+        let elems[arraySize] = value;
+        let arraySize = arraySize + 1;
+
+        return;
+    }
+
+    method void clear() {
+        let arraySize = 0;
+        return;
+    }
+
+    method int size() {
+        return arraySize;
+    }
+
+    method boolean isEmpty() {
+        if (arraySize > 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    method void print() {
+        var int index;
+        let index = 0;
+
+        while (index < arraySize) {
+            do Output.printInt(elems[index]);
+            do Output.println();
+            let index = index + 1;
+        }
+
+        return;
+    }
+
+    method void dispose() {
+        do elems.dispose();
+        return;
+    }
+
+}

@@ -1,0 +1,94 @@
+class StringStack {
+
+    field Array elems;
+    field int allocSize;
+    field int arraySize;
+
+    constructor StringStack new(int maxSize) {
+        let allocSize = maxSize;
+        let arraySize = 0;
+
+        let elems = Array.new(allocSize);
+        return this;
+    }
+
+    method String peek() {
+        if (arraySize > 0) {
+            return elems[arraySize - 1];
+        } else {
+            return null;
+        }
+    }
+
+    method void pop() {
+        var String elem;
+        if (arraySize > 0) {
+            let arraySize = arraySize - 1;
+            let elem      = elems[arraySize];
+            do elem.dispose();
+        }
+
+        return;
+    }
+
+    method void push(String value) {
+        var int    index;
+        var String elem;
+
+        if (arraySize = allocSize) {
+            let elem = elems[0];
+            do elem.dispose();
+
+            let index = 1;
+            while (index < arraySize) {
+                let elems[index - 1] = elems[index];
+                let index = index + 1;
+            }
+            do pop();
+        }
+
+        let elems[arraySize] = value;
+        let arraySize = arraySize + 1;
+
+        return;
+    }
+
+    method void clear() {
+        var int    index;
+        var String elem;
+
+        let index = 0;
+        while (index < arraySize) {
+            let elem = elems[index];
+            do elem.dispose();
+            let index = index + 1;
+        }
+
+        let arraySize = 0;
+        return;
+    }
+
+    method int size() {
+        return arraySize;
+    }
+
+    method void print() {
+        var int index;
+        let index = 0;
+
+        while (index < arraySize) {
+            do Output.printString(elems[index]);
+            do Output.println();
+            let index = index + 1;
+        }
+
+        return;
+    }
+
+    method void dispose() {
+        do clear();
+        do elems.dispose();
+        return;
+    }
+
+}

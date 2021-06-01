@@ -1,0 +1,69 @@
+class Main {
+   function void main() {
+      // constants
+      var String INPUT_STR;
+      var String HALT_STR;
+      var String CLEAR_STR;
+      var String FINISH_STR;
+      // constants
+      
+      var String fullLine;
+      var String evalLine;
+      var String line;
+      var int    lineLen;
+      
+      var StringStack stack;
+      var String      elem;
+      var int         size;
+
+      var boolean exit;
+
+      let INPUT_STR   = ">>> ";
+      let HALT_STR    = "HALT";
+      let CLEAR_STR   = "CLEAR";
+      let FINISH_STR  = "Program finished Successfully";
+
+      let exit  = false;
+      let stack = StringStack.new(22);
+
+      while (~exit) {
+         let line = Keyboard.readLine(INPUT_STR);
+         
+         if (MyString.equalsStrings(line, CLEAR_STR)) {
+            do stack.clear();
+            do line.dispose();
+         } else {
+            let fullLine = MyString.addStrings(INPUT_STR, line);
+            let lineLen = fullLine.length();
+            
+            if (lineLen < 65) {
+               if (MyString.equalsStrings(line, HALT_STR)) {
+                  let exit = true;
+                  let evalLine = FINISH_STR;
+               } else {
+                  let evalLine = MyString.evalLine(line);
+               }
+
+               do stack.push(fullLine);
+               do stack.push(evalLine);
+            } else {
+               do line.dispose();
+               do fullLine.dispose();
+            }
+         }
+
+         do Screen.clearScreen();
+         do Output.moveCursor(0, 0);
+         do stack.print();
+      }
+
+      do stack.dispose();
+
+      do INPUT_STR.dispose();
+      do HALT_STR.dispose();
+      do CLEAR_STR.dispose();
+      do FINISH_STR.dispose();
+
+      return;
+   }
+}
