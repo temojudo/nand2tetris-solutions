@@ -19,6 +19,10 @@ specific_symbol_dict = {
 }
 
 
+class StatementType(Enum):
+    LET, IF, WHILE, DO, RETURN, NOT_STATEMENT = range(6)
+
+
 class TokenType(Enum):
     KEYWORD, SYMBOL, IDENTIFIER, INT_CONST, STRING_CONST = range(5)
 
@@ -80,8 +84,22 @@ class Tokenizer:
         else:
             return TokenType.IDENTIFIER
 
-    def keyword(self) -> (KeywordType, str):
-        return KeywordType[self.tokens[self.curr_token_index].upper()], self.tokens[self.curr_token_index]
+    def statement(self) -> StatementType:
+        switcher = {
+            KeywordType.LET: StatementType.LET,
+            KeywordType.IF: StatementType.IF,
+            KeywordType.WHILE: StatementType.WHILE,
+            KeywordType.DO: StatementType.DO,
+            KeywordType.RETURN: StatementType.RETURN,
+        }
+
+        if self.token_type() == TokenType.KEYWORD and self.keyword() in switcher:
+            return switcher[self.keyword()]
+        else:
+            return StatementType.NOT_STATEMENT
+
+    def keyword(self) -> KeywordType:
+        return KeywordType[self.tokens[self.curr_token_index].upper()]
 
     def symbol(self) -> str:
         token = self.tokens[self.curr_token_index]
@@ -95,3 +113,94 @@ class Tokenizer:
 
     def string_val(self) -> str:
         return self.tokens[self.curr_token_index][1: -1]
+
+    def keyword_xml(self) -> str:
+        return f'<keyword> {self.tokens[self.curr_token_index]} </keyword>'
+
+    def symbol_xml(self) -> str:
+        return f'<symbol> {self.symbol()} </symbol>'
+
+    def identifier_xml(self) -> str:
+        return f'<identifier> {self.identifier()} </identifier>'
+
+    def string_val_xml(self) -> str:
+        return f'<stringConstant> {self.string_val()} </stringConstant>'
+
+    def int_val_xml(self) -> str:
+        return f'<integerConstant> {self.int_val()} </integerConstant>'
+
+    def is_token_open_parentheses(self) -> bool:
+        return self.has_more_tokens() and \
+               self.token_type() == TokenType.SYMBOL and \
+               self.symbol() == '('
+
+    def is_token_close_parentheses(self) -> bool:
+        return self.has_more_tokens() and \
+               self.token_type() == TokenType.SYMBOL and \
+               self.symbol() == ')'
+
+    def is_token_open_brackets(self) -> bool:
+        return self.has_more_tokens() and \
+               self.token_type() == TokenType.SYMBOL and \
+               self.symbol() == '['
+
+    def is_next_token_open_brackets(self) -> bool:
+        self.curr_token_index += 1
+        res = self.has_more_tokens() and self.token_type() == TokenType.SYMBOL and self.symbol() == '['
+
+        self.curr_token_index -= 1
+        return res
+
+    def is_next_token_open_parentheses_or_dot(self) -> bool:
+        self.curr_token_index += 1
+        res = self.has_more_tokens() and self.token_type() == TokenType.SYMBOL and self.symbol() in '(.'
+
+        self.curr_token_index -= 1
+        return res
+
+    def is_token_operation(self) -> bool:
+        return self.has_more_tokens() and \
+               self.tokens[self.curr_token_index] in '+-*/&|<>='
+
+    def is_token_unary_operation(self) -> bool:
+        return self.has_more_tokens() and \
+               self.token_type() == TokenType.SYMBOL and \
+               self.symbol() in '-~'
+
+    def is_token_comma(self) -> bool:
+        return self.has_more_tokens() and \
+               self.token_type() == TokenType.SYMBOL and \
+               self.symbol() == ','
+
+    def is_token_semicolon(self) -> bool:
+        return self.has_more_tokens() and \
+               self.token_type() == TokenType.SYMBOL and \
+               self.symbol() == ';'
+
+    def is_token_void(self) -> bool:
+        return self.has_more_tokens() and \
+               self.token_type() == TokenType.KEYWORD and \
+               self.keyword() == KeywordType.VOID
+
+    def is_token_else(self) -> bool:
+        return self.has_more_tokens() and \
+               self.token_type() == TokenType.KEYWORD and \
+               self.keyword() == KeywordType.ELSE
+
+    def is_token_var(self) -> bool:
+        return self.has_more_tokens() and \
+               self.token_type() == TokenType.KEYWORD and \
+               self.keyword() == KeywordType.VAR
+
+    def is_token_class_var(self) -> bool:
+        return self.has_more_tokens() and \
+               self.token_type() == TokenType.KEYWORD and \
+               self.keyword() in (KeywordType.STATIC,
+                                  KeywordType.FIELD)
+
+    def is_token_callable(self) -> bool:
+        return self.has_more_tokens() and \
+               self.token_type() == TokenType.KEYWORD and \
+               self.keyword() in (KeywordType.CONSTRUCTOR,
+                                  KeywordType.FUNCTION,
+                                  KeywordType.METHOD)

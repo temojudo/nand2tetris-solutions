@@ -3,6 +3,7 @@ from os import listdir
 from os.path import isfile, isdir
 from typing import List, TextIO
 
+from app.compilation_engine import CompilationEngine
 from app.constants import JACK_FILE_EXT, TOKENIZER_FILE_EXT, PARSER_FILE_EXT
 from app.tokenizer import Tokenizer, TokenType
 
@@ -15,68 +16,39 @@ def get_out_file_name_for_parser(input_file_name: str) -> str:
     return input_file_name.rstrip(JACK_FILE_EXT) + PARSER_FILE_EXT
 
 
-# def read_file(file_name: str) -> List[str]:
-#     with open(file_name, 'r') as jack_file:
-#         return jack_file.readlines()
-#
-#
-# def remove_comments(program_lines: List[str]) -> List[str]:  # doesnt cover all cases
-#     res = []
-#     multiline_comment_started = False
-#
-#     for line in program_lines:
-#         if '/*' in line:
-#             multiline_comment_started = True
-#
-#         if '*/' in line:
-#             multiline_comment_started = False
-#             continue
-#
-#         if not multiline_comment_started:
-#             without_inline_comment = line.split('//')[0] if '//' in line else line
-#             res.append(without_inline_comment)
-#
-#     return res
-
-
 def write_file(file_name: str, lines: List[str]) -> None:
     with open(file_name, 'w') as xml_file:
         xml_file.writelines(lines)
 
 
 def write_keyword(file: TextIO, tokenizer: Tokenizer) -> None:
-    file.write('<keyword> ')
-    file.write(tokenizer.keyword()[1])
-    file.write(' </keyword>\n')
+    file.write(tokenizer.keyword_xml() + '\n')
 
 
 def write_symbol(file: TextIO, tokenizer: Tokenizer) -> None:
-    file.write('<symbol> ')
-    file.write(tokenizer.symbol())
-    file.write(' </symbol>\n')
+    file.write(tokenizer.symbol_xml() + '\n')
 
 
 def write_identifier(file: TextIO, tokenizer: Tokenizer) -> None:
-    file.write('<identifier> ')
-    file.write(tokenizer.identifier())
-    file.write(' </identifier>\n')
+    file.write(tokenizer.identifier_xml() + '\n')
 
 
 def write_int_const(file: TextIO, tokenizer: Tokenizer) -> None:
-    file.write('<integerConstant> ')
-    file.write(str(tokenizer.int_val()))
-    file.write(' </integerConstant>\n')
+    file.write(tokenizer.int_val_xml() + '\n')
 
 
 def write_string_const(file: TextIO, tokenizer: Tokenizer) -> None:
-    file.write('<stringConstant> ')
-    file.write(tokenizer.string_val())
-    file.write(' </stringConstant>\n')
+    file.write(tokenizer.string_val_xml() + '\n')
 
 
 def analyze_file(file_name: str) -> None:
     tokenizer_file_name = get_out_file_name_for_tokenizer(file_name)
+    parser_file_name = get_out_file_name_for_parser(file_name)
+
     tokenizer = Tokenizer(file_name)
+    parser = CompilationEngine(tokenizer, parser_file_name)
+
+    parser.write_file()
 
     switcher = {
         TokenType.KEYWORD: write_keyword,
