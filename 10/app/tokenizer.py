@@ -1,6 +1,6 @@
 from enum import Enum
 from re import findall, sub, compile
-from typing import List
+from typing import List, TextIO
 
 from app.constants import DOUBLE_QUOTE
 
@@ -34,12 +34,49 @@ class KeywordType(Enum):
 
 class Tokenizer:
 
-    def __init__(self, file_name: str):
+    def __init__(self, file_name: str, out_file_name):
         self.file_name = file_name
+        self.out_file_name = out_file_name
         self.file_str = self.parse_file()
 
         self.quotes = self.get_quote_indexes()
         self.tokens = self.generate_tokens()
+        self.curr_token_index = 0
+
+    def write_keyword(self, file: TextIO) -> None:
+        file.write(self.keyword_xml() + '\n')
+
+    def write_symbol(self, file: TextIO) -> None:
+        file.write(self.symbol_xml() + '\n')
+
+    def write_identifier(self, file: TextIO) -> None:
+        file.write(self.identifier_xml() + '\n')
+
+    def write_int_const(self, file: TextIO) -> None:
+        file.write(self.int_val_xml() + '\n')
+
+    def write_string_const(self, file: TextIO) -> None:
+        file.write(self.string_val_xml() + '\n')
+
+    def write_file(self) -> None:
+        with open(self.out_file_name, 'w') as file:
+            switcher = {
+                TokenType.KEYWORD: self.write_keyword,
+                TokenType.SYMBOL: self.write_symbol,
+                TokenType.IDENTIFIER: self.write_identifier,
+                TokenType.INT_CONST: self.write_int_const,
+                TokenType.STRING_CONST: self.write_string_const,
+            }
+
+            file.write('<tokens>\n')
+
+            while self.has_more_tokens():
+                switcher[self.token_type()](file)
+                self.advance()
+
+            file.write('</tokens>\n')
+
+    def reset(self) -> None:
         self.curr_token_index = 0
 
     def parse_file(self) -> str:
