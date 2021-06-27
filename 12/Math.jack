@@ -8,13 +8,36 @@
  * Note: Jack compilers implement multiplication and division using OS method calls.
  */
 class Math {
+    static Array twosPowers;
+    static int   wordLen;
 
     /** Initializes the library. */
     function void init() {
+        var int i;
+        var int power;
+
+        let i          = 0;
+        let power      = 1;
+        let wordLen    = 16;
+        let twosPowers = Array.new(wordLen);
+
+        while (i < wordLen) {
+            let twosPowers[i] = power;
+
+            let power = power + power;
+            let i     = i + 1;
+        }
+
+        return;
     }
 
     /** Returns the absolute value of x. */
     function int abs(int x) {
+        if (x < 0) {
+            let x = -x;
+        }
+
+        return x;
     }
 
     /** Returns the product of x and y. 
@@ -23,6 +46,22 @@ class Math {
      *  the Jack expressions x*y and multiply(x,y) return the same value.
      */
     function int multiply(int x, int y) {
+        var int i;
+        var int sum;
+
+        let i   = 0;
+        let sum = 0;
+
+        while (i < wordLen) {
+            if (y & twosPowers[i]) {
+                let sum = sum + x;
+            }
+
+            let x = x + x;
+            let i = i + 1;
+        }
+
+        return sum;
     }
 
     /** Returns the integer part of x/y.
@@ -31,17 +70,86 @@ class Math {
      *  the Jack expressions x/y and divide(x,y) return the same value.
      */
     function int divide(int x, int y) {
+        var int sign;
+        var int division;
+
+        if (y = 0) {
+            do Sys.error(3); // Division by zero
+        }
+        
+        let sign     = Math.multiplicationSign(x, y);
+        let division = Math.recDivide(Math.abs(x), Math.abs(y));
+
+        return Math.multiply(sign, division);
+    }
+    
+    function int multiplicationSign(int x, int y) {
+        if (((x > 0) & (y > 0)) | ((x < 0) & (y < 0))) {
+            return 1;
+        } else {
+            return -1;
+        }
+    }
+
+    function int recDivide(int x, int y) {
+        var int q;
+        
+        if ((y < 0) | (y > x)) {
+            return 0;
+        }
+        
+        let q = Math.recDivide(x, y + y);
+        
+        if ((x - Math.multiply(2, Math.multiply(q, y))) < y) { // check if (x - 2 * q * y) < y
+            return q + q;
+        } else {
+            return q + q + 1;
+        }
     }
 
     /** Returns the integer part of the square root of x. */
     function int sqrt(int x) {
+        var int i;
+        var int y;
+        var int newY;
+        var int squareY;
+
+        if (x < 0) {
+            do Sys.error(4); // Cannot compute square root of a negative number
+        }
+
+        let i = Math.divide(wordLen, 2) - 1;
+        let y = 0;
+
+        while (i > -1) {
+            let newY    = y + twosPowers[i];
+            let squareY = Math.multiply(newY, newY);
+            
+            if ((squareY > 0) & ((squareY < x) | (squareY = x))) {
+                let y = newY;
+            }
+
+            let i = i - 1;
+        }
+
+        return y;
     }
 
     /** Returns the greater number. */
     function int max(int a, int b) {
+        if (a > b) {
+            return a;
+        } else {
+            return b;
+        }
     }
 
     /** Returns the smaller number. */
     function int min(int a, int b) {
+        if (a > b) {
+            return b;
+        } else {
+            return a;
+        }
     }
 }

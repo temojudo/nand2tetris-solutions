@@ -7,10 +7,13 @@
  * A library for handling user input from the keyboard.
  */
 class Keyboard {
+    static int keyboard;
 
     /** Initializes the keyboard. */
     function void init() {
-    } 
+        let keyboard = 24576;
+        return;
+    }
 
     /**
      * Returns the character of the currently pressed key on the keyboard;
@@ -33,6 +36,7 @@ class Keyboard {
      * F1 - F12 = 141 - 152
      */
     function char keyPressed() {
+        return keyboard[0];
     }
 
     /**								
@@ -41,6 +45,19 @@ class Keyboard {
      * of the pressed key.
      */
     function char readChar() {
+        var char ch;
+
+        while (Keyboard.keyPressed() = 0) {
+            // wait for key press
+        }
+
+        let ch = Keyboard.keyPressed();
+        while (~(Keyboard.keyPressed() = 0)) {
+            // wait for key release
+        }
+
+        do Output.printChar(ch);
+        return ch;
     }
 
     /**								
@@ -49,7 +66,31 @@ class Keyboard {
      * and returns its value. Also handles user backspaces.
      */
     function String readLine(String message) {
-    }   
+        var char    ch;
+        var String  line;
+        var boolean exit;
+
+        do Output.printString(message);
+
+        let line = String.new(128);
+        let exit = false;
+
+        while (~exit) {
+            let ch = Keyboard.readChar();
+
+            if (ch = String.newLine()) {
+                let exit = true;
+            } else {
+                if (ch = String.backSpace()) {
+                    do line.eraseLastChar();
+                } else {
+                    do line.appendChar(ch);
+                }
+            }
+        }
+
+        return line;
+    }
 
     /**								
      * Displays the message on the screen, reads from the keyboard the entered
@@ -58,5 +99,9 @@ class Keyboard {
      * entered text is detected). Also handles user backspaces. 
      */
     function int readInt(String message) {
+        var String number;
+
+        let number = Keyboard.readLine(message);
+        return number.intValue();
     }
 }
