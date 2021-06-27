@@ -1,0 +1,201 @@
+function SquareGame.new 0
+push constant 2
+call Memory.alloc 1
+pop pointer 0
+push constant 0
+push constant 0
+push constant 30
+call Square.new 3
+pop this 0
+push constant 0
+pop this 1
+push pointer 0
+return
+function SquareGame.dispose 0
+push argument 0
+pop pointer 0
+push this 0
+call Square.dispose 1
+pop temp 0
+push pointer 0
+call Memory.deAlloc 1
+pop temp 0
+push constant 0
+return
+function SquareGame.moveSquare 0
+push argument 0
+pop pointer 0
+push this 1
+push constant 1
+eq
+if-goto IF_BEGIN0
+goto ELSE_BEGIN0
+label IF_BEGIN0
+push this 0
+call Square.moveUp 1
+pop temp 0
+goto IF_ELSE_END0
+label ELSE_BEGIN0
+label IF_ELSE_END0
+push this 1
+push constant 2
+eq
+if-goto IF_BEGIN1
+goto ELSE_BEGIN1
+label IF_BEGIN1
+push this 0
+call Square.moveDown 1
+pop temp 0
+goto IF_ELSE_END1
+label ELSE_BEGIN1
+label IF_ELSE_END1
+push this 1
+push constant 3
+eq
+if-goto IF_BEGIN2
+goto ELSE_BEGIN2
+label IF_BEGIN2
+push this 0
+call Square.moveLeft 1
+pop temp 0
+goto IF_ELSE_END2
+label ELSE_BEGIN2
+label IF_ELSE_END2
+push this 1
+push constant 4
+eq
+if-goto IF_BEGIN3
+goto ELSE_BEGIN3
+label IF_BEGIN3
+push this 0
+call Square.moveRight 1
+pop temp 0
+goto IF_ELSE_END3
+label ELSE_BEGIN3
+label IF_ELSE_END3
+push constant 5
+call Sys.wait 1
+pop temp 0
+push constant 0
+return
+function SquareGame.run 2
+push argument 0
+pop pointer 0
+push constant 0
+pop local 1
+label WHILE_BEGIN0
+push local 1
+not
+not
+if-goto WHILE_END0
+label WHILE_BEGIN1
+push local 0
+push constant 0
+eq
+not
+if-goto WHILE_END1
+call Keyboard.keyPressed 0
+pop local 0
+push pointer 0
+call SquareGame.moveSquare 1
+pop temp 0
+goto WHILE_BEGIN1
+label WHILE_END1
+push local 0
+push constant 81
+eq
+if-goto IF_BEGIN4
+goto ELSE_BEGIN4
+label IF_BEGIN4
+push constant 0
+not
+pop local 1
+goto IF_ELSE_END4
+label ELSE_BEGIN4
+label IF_ELSE_END4
+push local 0
+push constant 90
+eq
+if-goto IF_BEGIN5
+goto ELSE_BEGIN5
+label IF_BEGIN5
+push this 0
+call Square.decSize 1
+pop temp 0
+goto IF_ELSE_END5
+label ELSE_BEGIN5
+label IF_ELSE_END5
+push local 0
+push constant 88
+eq
+if-goto IF_BEGIN6
+goto ELSE_BEGIN6
+label IF_BEGIN6
+push this 0
+call Square.incSize 1
+pop temp 0
+goto IF_ELSE_END6
+label ELSE_BEGIN6
+label IF_ELSE_END6
+push local 0
+push constant 131
+eq
+if-goto IF_BEGIN7
+goto ELSE_BEGIN7
+label IF_BEGIN7
+push constant 1
+pop this 1
+goto IF_ELSE_END7
+label ELSE_BEGIN7
+label IF_ELSE_END7
+push local 0
+push constant 133
+eq
+if-goto IF_BEGIN8
+goto ELSE_BEGIN8
+label IF_BEGIN8
+push constant 2
+pop this 1
+goto IF_ELSE_END8
+label ELSE_BEGIN8
+label IF_ELSE_END8
+push local 0
+push constant 130
+eq
+if-goto IF_BEGIN9
+goto ELSE_BEGIN9
+label IF_BEGIN9
+push constant 3
+pop this 1
+goto IF_ELSE_END9
+label ELSE_BEGIN9
+label IF_ELSE_END9
+push local 0
+push constant 132
+eq
+if-goto IF_BEGIN10
+goto ELSE_BEGIN10
+label IF_BEGIN10
+push constant 4
+pop this 1
+goto IF_ELSE_END10
+label ELSE_BEGIN10
+label IF_ELSE_END10
+label WHILE_BEGIN2
+push local 0
+push constant 0
+eq
+not
+not
+if-goto WHILE_END2
+call Keyboard.keyPressed 0
+pop local 0
+push pointer 0
+call SquareGame.moveSquare 1
+pop temp 0
+goto WHILE_BEGIN2
+label WHILE_END2
+goto WHILE_BEGIN0
+label WHILE_END0
+push constant 0
+return
