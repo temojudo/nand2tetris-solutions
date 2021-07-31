@@ -23,7 +23,7 @@ class BattleshipGame {
     method void drawMessage(String message) {
         do Screen.setColor(false);
 
-        do Screen.drawRectangle(0, 0, 256, 27);
+        do Screen.drawRectangle(0, 0, 511, 27);
         do Output.moveCursor(0, 0);
         do Output.printString(message);
         
@@ -44,10 +44,15 @@ class BattleshipGame {
         return;
     }
 
-    method void run() {
-        var char key;  // the key currently pressed by the user
+    method int placePlayerShips() {
+        var int key;  // the key currently pressed by the user
+        var int seed;
         var boolean exit, validate;
+
         let exit = false;
+        let seed = 0;
+
+        do drawMessage("Choose 7 ships with length 1,1,2,2,3,4,5. Use 'enter' for place/displace ship parts and 's' to start game!");
         
         while (~exit) {
             // waits for a key to be pressed
@@ -56,8 +61,6 @@ class BattleshipGame {
             }
             
             let command = -1;
-
-            if (key = 81)  { let exit = true; }   // q key          
             if (key = 128) { let command = 0; }   // enter key
             if (key = 131) { let command = 1; }   // up arrow
             if (key = 133) { let command = 2; }   // down arrow
@@ -68,6 +71,7 @@ class BattleshipGame {
                 let validate = playerBoard.validateBoard();
                 if (validate) {
                     do drawMessage("Valid Board");
+                    let exit = true;
                 } else {
                     do drawMessage("Invalid Board");
                 }
@@ -75,10 +79,36 @@ class BattleshipGame {
 
             // waits for the key to be released
             while (~(key = 0)) {
-                let key = Keyboard.keyPressed();
+                let seed = seed + key;
+                let key  = Keyboard.keyPressed();
             }
+
             do executeCommand();
         }
+
+        do playerBoard.removeCursor();
+        return seed;
+    }
+
+    method void placeComputerShips() {
+        do computerBoard.placeComputerShips();
+        return;
+    }
+
+    method void run() {
+        var int key;  // the key currently pressed by the user
+        var int seed;
+        var boolean exit, validate;
+
+        let seed = placePlayerShips();
+        
+        do drawMessage("Computer started placing ships");
+        do Sys.wait(4);
+
+        do Random.setSeed(seed);
+        do placeComputerShips();
+
+        do drawMessage("Computer ended placing ships");
         return;
     }
 }

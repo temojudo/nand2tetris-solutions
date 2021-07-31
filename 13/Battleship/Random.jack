@@ -1,0 +1,54 @@
+class Random {
+	static int seed, calledTime;
+
+	function void setSeed(int newSeed) {
+		let seed = newSeed;
+        let seed = Random.rand();
+        let calledTime = seed;
+		return;
+	}
+
+    function int rand() {
+        let seed = seed + 20251;
+
+        if (seed < 0) {
+            let seed = seed - 32767 - 1;
+        }
+
+        return seed;
+    }
+
+    function int randRange(int range) {
+        var int mask, res;
+
+        let mask = 1;
+        while (mask < range) {
+            let mask = (mask * 2) + 1;
+        }
+
+        let res = Random.rand() & mask;
+        let calledTime = calledTime + 1;
+
+        while (res > range) {
+            let res = Random.rand() & mask;
+            let calledTime = calledTime + 1;
+            let res = res & Random.getShift();
+        }
+
+        return res;
+    }
+
+    function int getShift() {
+        var int temp;
+
+        let calledTime = calledTime + 1;
+        let temp = calledTime;
+        
+        while(temp > 9) {
+            let temp = temp - 9;
+        }
+
+        return temp;
+    }
+
+}

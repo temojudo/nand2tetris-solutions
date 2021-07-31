@@ -101,6 +101,17 @@ class Board {
         return;
     }
 
+    method boolean hasNoNeighbour(Array grid, int i, int j) {
+        return ((getShip(grid, Math.max(0, i - 1), Math.max(0, j - 1)) = 0) &
+                (getShip(grid, Math.max(0, i - 1), j) = 0) &
+                (getShip(grid, Math.max(0, i - 1), Math.min(numRows - 1, j + 1)) = 0) &
+                (getShip(grid, i, Math.max(0, j - 1)) = 0) &
+                (getShip(grid, i, Math.min(numRows - 1, j + 1)) = 0) &
+                (getShip(grid, Math.min(numCols - 1, i + 1), Math.max(0, j - 1)) = 0) &
+                (getShip(grid, Math.min(numCols - 1, i + 1), j) = 0) &
+                (getShip(grid, Math.min(numCols - 1, i + 1), Math.min(numRows - 1, j + 1)) = 0));
+    }
+
     method void drawCursor() {
         var int x, y;
 
@@ -335,6 +346,169 @@ class Board {
         do disposeGrid(checkedCells);
 
         return res;
+    }
+
+    method int getEmptySpaceUp(int i, int j) {
+        var int res;
+
+        let res = 0;
+        while (j > -1) {
+            if (getShip(grid, i, j) | (~hasNoNeighbour(grid, i, j))) {
+                return res;
+            }
+
+            let res = res + 1;
+            let j   = j   - 1;
+        }
+
+        return res;
+    }
+
+    method int getEmptySpaceDown(int i, int j) {
+        var int res;
+
+        let res = 0;
+        while (j < numRows) {
+            if (getShip(grid, i, j) | (~hasNoNeighbour(grid, i, j))) {
+                return res;
+            }
+
+            let res = res + 1;
+            let j   = j   + 1;
+        }
+
+        return res;
+    }
+
+    method int getEmptySpaceLeft(int i, int j) {
+        var int res;
+
+        let res = 0;
+        while (i > -1) {
+            if (getShip(grid, i, j) | (~hasNoNeighbour(grid, i, j))) {
+                return res;
+            }
+
+            let res = res + 1;
+            let i   = i   - 1;
+        }
+
+        return res;
+    }
+
+    method int getEmptySpaceRight(int i, int j) {
+        var int res;
+
+        let res = 0;
+        while (i < numCols) {
+            if (getShip(grid, i, j) | (~hasNoNeighbour(grid, i, j))) {
+                return res;
+            }
+
+            let res = res + 1;
+            let i   = i   + 1;
+        }
+
+        return res;
+    }
+
+    method void placeComputerShipWithLenHorizontal(int i, int j, int rightLen, int len) {
+        var int x;
+
+        let x = 0;
+        while ((x < rightLen) & (len > 0)) {
+            do setCursor(i + x + 1, j);
+            do placeShip();
+
+            let len = len - 1;
+            let x   = x   + 1;
+        }
+
+        let x = 0;
+        while (len > 0) {
+            do setCursor(i - x, j);
+            do placeShip();
+            
+            let len = len - 1;
+            let x   = x   + 1;
+        }
+
+        return;
+    }
+
+    method void placeComputerShipWithLenVertical(int i, int j, int downLen, int len) {
+        var int y;
+
+        let y = 0;
+        while ((y < downLen) & (len > 0)) {
+            do setCursor(i, j + y + 1);
+            do placeShip();
+
+            let len = len - 1;
+            let y   = y   + 1;
+        }
+
+        let y = 0;
+        while (len > 0) {
+            do setCursor(i, j - y);
+            do placeShip();
+            
+            let len = len - 1;
+            let y   = y   + 1;
+        }
+
+        return;
+    }
+
+    method void placeComputerShipWithLen(int len) {
+        var int i, j, h, emptySpace;
+        var int leftLen, rightLen, upLen, downLen;
+        var boolean exit;
+
+        let exit = false;
+        while (~exit) {
+            let i = Random.randRange(numRows - 1);
+            let j = Random.randRange(numCols - 1);
+            
+            let emptySpace = 0;
+            if ((getShip(grid, i, j) = 0) & hasNoNeighbour(grid, i, j)) {
+                let h = Random.randRange(1);
+                if (h = 0) {
+                    let upLen      = getEmptySpaceUp(i, j - 1);
+                    let downLen    = getEmptySpaceDown(i, j + 1);
+                    let emptySpace = upLen + downLen + 1;
+                } else {
+                    let rightLen   = getEmptySpaceRight(i + 1, j);
+                    let leftLen    = getEmptySpaceLeft(i - 1, j);
+                    let emptySpace = leftLen + rightLen + 1;
+                }
+            }
+
+            if (emptySpace > (len - 1)) {
+                let exit = true;
+            }
+        }
+
+        if (h = 0) {
+            do placeComputerShipWithLenVertical(i, j, downLen, len);
+        } else {
+            do placeComputerShipWithLenHorizontal(i, j, rightLen, len);
+        }
+        
+        return;
+    }
+
+    method void placeComputerShips() {
+        do placeComputerShipWithLen(5);
+        do placeComputerShipWithLen(4);
+        do placeComputerShipWithLen(3);
+        do placeComputerShipWithLen(2);
+        do placeComputerShipWithLen(2);
+        do placeComputerShipWithLen(1);
+        do placeComputerShipWithLen(1);
+
+        do removeCursor();
+        return;
     }
 
     function void drawCell(int x, int y, int width, int height) {
