@@ -1,7 +1,7 @@
 class BattleshipGame {
     field Board playerBoard;
     field Board computerBoard;
-    field int command;
+    field int direction;
 
     constructor BattleshipGame new() {
         let playerBoard   = Board.new(37,  28, 10, 10, 20);
@@ -33,12 +33,11 @@ class BattleshipGame {
         return;
     }
 
-    method void executeCommand() {
-        if (command = 0) { do playerBoard.placeShip(); }
-        if (command = 1) { do playerBoard.moveUp(); }
-        if (command = 2) { do playerBoard.moveDown(); }
-        if (command = 3) { do playerBoard.moveLeft(); }
-        if (command = 4) { do playerBoard.moveRight(); }
+    method void moveCursor(Board board) {
+        if (direction = 1) { do board.moveUp(); }
+        if (direction = 2) { do board.moveDown(); }
+        if (direction = 3) { do board.moveLeft(); }
+        if (direction = 4) { do board.moveRight(); }
 
         do Sys.wait(4);  // delays the next movement
         return;
@@ -60,12 +59,15 @@ class BattleshipGame {
                 let key = Keyboard.keyPressed();
             }
             
-            let command = -1;
-            if (key = 128) { let command = 0; }   // enter key
-            if (key = 131) { let command = 1; }   // up arrow
-            if (key = 133) { let command = 2; }   // down arrow
-            if (key = 130) { let command = 3; }   // left arrow
-            if (key = 132) { let command = 4; }   // right arrow
+            let direction = -1;
+            if (key = 131) { let direction = 1; }   // up arrow
+            if (key = 133) { let direction = 2; }   // down arrow
+            if (key = 130) { let direction = 3; }   // left arrow
+            if (key = 132) { let direction = 4; }   // right arrow
+
+            if (key = 128) { // enter key
+                do playerBoard.placeShip();
+            }
 
             if (key = 83) { // s key 
                 let validate = playerBoard.validateBoard();
@@ -83,7 +85,7 @@ class BattleshipGame {
                 let key  = Keyboard.keyPressed();
             }
 
-            do executeCommand();
+            do moveCursor(playerBoard);
         }
 
         do playerBoard.removeCursor();
@@ -91,24 +93,92 @@ class BattleshipGame {
     }
 
     method void placeComputerShips() {
+        do drawMessage("Computer started placing ships");
+        do Sys.wait(4);
+
         do computerBoard.placeComputerShips();
+        
+        do drawMessage("Computer ended placing ships");
+        do Sys.wait(4);
+
+        return;
+    }
+
+    method boolean doPlayerMoves() {
+        var boolean exit, sinked;
+        var int key;
+        
+        do drawMessage("Player's turn");
+        do computerBoard.setCursor(0, 0);
+
+        let exit = false;
+        while (~exit) {
+            // waits for a key to be pressed
+            while (key = 0) {
+                let key = Keyboard.keyPressed();
+            }
+            
+            let direction = -1;
+            if (key = 131) { let direction = 1; }   // up arrow
+            if (key = 133) { let direction = 2; }   // down arrow
+            if (key = 130) { let direction = 3; }   // left arrow
+            if (key = 132) { let direction = 4; }   // right arrow
+
+            if (key = 128) { // enter key
+                let sinked = computerBoard.markPlace();
+                let exit = ((~sinked) | computerBoard.isAllShipsSinked());
+            }
+
+            // waits for the key to be released
+            while (~(key = 0)) {
+                let key = Keyboard.keyPressed();
+            }
+
+            do moveCursor(computerBoard);
+        }
+
+        do computerBoard.removeCursor();
+        return computerBoard.isAllShipsSinked();
+    }
+
+    method boolean doComputerMoves() {
+        do drawMessage("Computer's turn");
+        do Sys.wait(250);
+
+        return false;
+    }
+
+    method void startBattle() {
+        var boolean playerWins, computerWins;
+
+        let playerWins   = false;
+        let computerWins = false;
+
+        while ((~playerWins) & (~computerWins)) {
+            let playerWins = doPlayerMoves();
+            if (~playerWins) {
+                let computerWins = doComputerMoves();
+            }
+        }
+
+        if (playerWins) {
+            do drawMessage("Wow, You're Geniuos");
+        } else {
+            do drawMessage("Maybe next time");
+        }
+
         return;
     }
 
     method void run() {
-        var int key;  // the key currently pressed by the user
         var int seed;
-        var boolean exit, validate;
 
         let seed = placePlayerShips();
-        
-        do drawMessage("Computer started placing ships");
-        do Sys.wait(4);
 
         do Random.setSeed(seed);
         do placeComputerShips();
 
-        do drawMessage("Computer ended placing ships");
+        do startBattle();
         return;
     }
 }

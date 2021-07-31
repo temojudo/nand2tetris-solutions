@@ -3,7 +3,8 @@ class Board {
     field int cursorX, cursorY;
     field int cursorCellDiff, shipCellDiff;
     field int cursorSize, shipSize;
-    field Array grid;
+    field int sinkedShipParts, numShipParts;
+    field Array grid, sinkedShips;
 
     constructor Board new(int x, int y, int rows, int cols, int size) {
         var int i, j;
@@ -30,6 +31,8 @@ class Board {
 
     method void dispose() {
         do disposeGrid(grid);
+        do disposeGrid(sinkedShips);
+        
         return;
     }
 
@@ -48,20 +51,25 @@ class Board {
     }
 
     method void initBoardParams(int x, int y, int rows, int cols, int size) {
-        let topX           = x;
-        let topY           = y;
-        let numRows        = rows;
-        let numCols        = cols;
-        let cellSize       = size;
-        let cursorX        = -1;
-        let cursorY        = -1;
-        let cursorCellDiff = 1;
-        let shipCellDiff   = 2;
-        let cursorSize     = cellSize - (2 * cursorCellDiff);
-        let shipSize       = cellSize - (2 * shipCellDiff);
-        let grid           = Array.new(numRows);
+        let topX            = x;
+        let topY            = y;
+        let numRows         = rows;
+        let numCols         = cols;
+        let cellSize        = size;
+        let cursorX         = -1;
+        let cursorY         = -1;
+        let cursorCellDiff  = 1;
+        let shipCellDiff    = 2;
+        let cursorSize      = cellSize - (2 * cursorCellDiff);
+        let shipSize        = cellSize - (2 * shipCellDiff);
+        let sinkedShipParts = 0;
+        let numShipParts    = 18;
+        let grid            = Array.new(numRows);
+        let sinkedShips     = Array.new(numRows);
 
         do initGrid(grid);
+        do initGrid(sinkedShips);
+
         return;
     }
 
@@ -99,6 +107,10 @@ class Board {
 
         let rowGrid[j] = value;
         return;
+    }
+
+    method boolean isAllShipsSinked() {
+        return (numShipParts = sinkedShipParts);
     }
 
     method boolean hasNoNeighbour(Array grid, int i, int j) {
@@ -321,8 +333,8 @@ class Board {
     method boolean checkBoard(Array checkedCells) {
         var int numShips;
 
-        if (~(getNumShips(grid) = 18)) { return false; }
-        if (containsCommonCorner())    { return false; }
+        if (~(getNumShips(grid) = numShipParts)) { return false; }
+        if (containsCommonCorner())              { return false; }
 
         if (~findShipByLen(checkedCells, 5)) { return false; }
         if (~findShipByLen(checkedCells, 4)) { return false; }
@@ -509,6 +521,226 @@ class Board {
 
         do removeCursor();
         return;
+    }
+
+    method void drawMissCell() {
+        var int val;
+
+        do Screen.drawLine(topX + (cellSize * cursorX) + ((cellSize * 4) / 10), topY + (cellSize * cursorY)
+                         , topX + (cellSize * cursorX) + (cellSize / 4), topY + (cellSize * cursorY) + cellSize);
+        
+        do Screen.drawLine(topX + (cellSize * cursorX) + ((cellSize * 3) / 4), topY + (cellSize * cursorY)
+                         , topX + (cellSize * cursorX) + (cellSize / 2), topY + (cellSize * cursorY) + cellSize);
+
+        do Screen.drawLine(topX + (cellSize * cursorX), topY + (cellSize * cursorY) + (cellSize / 3)
+                         , topX + (cellSize * cursorX) + cellSize, topY + (cellSize * cursorY) + (cellSize / 3));
+
+
+        do Screen.drawLine(topX + (cellSize * cursorX), topY + (cellSize * cursorY) + ((cellSize * 2) / 3)
+                         , topX + (cellSize * cursorX) + cellSize, topY + (cellSize * cursorY) + ((cellSize * 2) / 3));
+
+        return;
+    }
+
+    method void drawShipPart() {
+        var int x1, y1, x2, y2;
+
+        let x1 = topX + (cursorX * cellSize) + shipCellDiff;
+        let y1 = topY + (cursorY * cellSize) + shipCellDiff;
+
+        let x2 = x1 + shipSize;
+        let y2 = y1 + shipSize;
+
+        do Screen.drawRectangle(x1, y1, x2, y2);
+        do Screen.setColor(false);
+
+        do Screen.drawLine(x1 + (shipSize / 2), y1, x1 + (shipSize / 2), y2 - (shipSize / 4));
+        do Screen.drawPixel(x1 + (shipSize / 2), y2 - (shipSize / 9));
+
+        do Screen.setColor(true);
+        return;
+    }
+
+    method void drawSinkedShipPart(int i, int j) {
+        var int x1, y1, x2, y2;
+
+        let x1 = topX + (i * cellSize) + shipCellDiff;
+        let y1 = topY + (j * cellSize) + shipCellDiff;
+
+        let x2 = x1 + shipSize;
+        let y2 = y1 + shipSize;
+
+        do Screen.drawRectangle(x1, y1, x2, y2);
+        do Screen.setColor(false);
+
+        do Screen.drawLine(x1 + ((shipSize * 2) / 3), y1, x1 + (shipSize / 3), y2);
+        do Screen.drawLine(x1 + (shipSize / 3), y1, x1 + ((shipSize * 2) / 3), y2);
+
+        do Screen.setColor(true);
+        return;
+    }
+
+    method void drawSinkedShip() {
+        var int i, j;
+
+        do drawSinkedShipPart(cursorX, cursorY);
+
+        let i = cursorX + 1;
+        let j = cursorY;
+
+        while (i < numRows) {
+            if (getShip(sinkedShips, i, j) = 1) {
+                do drawSinkedShipPart(i, j);
+            } else {
+                let i = numRows;
+            }
+
+            let i = i + 1;
+        }
+
+        let i = cursorX - 1;
+        let j = cursorY;
+
+        while (i > -1) {
+            if (getShip(sinkedShips, i, j) = 1) {
+                do drawSinkedShipPart(i, j);
+            } else {
+                let i = 0;
+            }
+
+            let i = i - 1;
+        }
+
+        let i = cursorX;
+        let j = cursorY + 1;
+
+        while (j < numCols) {
+            if (getShip(sinkedShips, i, j) = 1) {
+                do drawSinkedShipPart(i, j);
+            } else {
+                let j = numCols;
+            }
+
+            let j = j + 1;
+        }
+
+        let i = cursorX;
+        let j = cursorY - 1;
+
+        while (j > -1) {
+            if (getShip(sinkedShips, i, j) = 1) {
+                do drawSinkedShipPart(i, j);
+            } else {
+                let j = 0;
+            }
+
+            let j = j - 1;
+        }
+
+        return;
+    }
+
+    method boolean isShipSinked() {
+        var boolean exit;
+        var int i, j;
+
+        let exit = false;
+        let i    = cursorX;
+        let j    = cursorY;
+
+        while (~exit) {
+            if (getShip(sinkedShips, i, j) = 0) {
+                if (getShip(grid, i, j) = 1) {
+                    return false;
+                } else {
+                    let exit = true;
+                }
+            }
+
+            let i = i + 1;
+            if (i > (numRows - 1)) {
+                let exit = true;
+            }
+        }
+
+        let exit = false;
+        let i    = cursorX;
+        let j    = cursorY;
+
+        while (~exit) {
+            if (getShip(sinkedShips, i, j) = 0) {
+                if (getShip(grid, i, j) = 1) {
+                    return false;
+                } else {
+                    let exit = true;
+                }
+            }
+
+            let i = i - 1;
+            if (i < 0) {
+                let exit = true;
+            }
+        }
+
+        let exit = false;
+        let i    = cursorX;
+        let j    = cursorY;
+
+        while (~exit) {
+            if (getShip(sinkedShips, i, j) = 0) {
+                if (getShip(grid, i, j) = 1) {
+                    return false;
+                } else {
+                    let exit = true;
+                }
+            }
+
+            let j = j + 1;
+            if (j > (numCols - 1)) {
+                let exit = true;
+            }
+        }
+
+        let exit = false;
+        let i    = cursorX;
+        let j    = cursorY;
+
+        while (~exit) {
+            if (getShip(sinkedShips, i, j) = 0) {
+                if (getShip(grid, i, j) = 1) {
+                    return false;
+                } else {
+                    let exit = true;
+                }
+            }
+
+            let j = j - 1;
+            if (j < 0) {
+                let exit = true;
+            }
+        }
+
+        return true;
+    }
+
+    method boolean markPlace() {
+        if (getShip(grid, cursorX, cursorY) = 0) {
+            do drawMissCell();
+            return false;
+        }
+
+        if (getShip(sinkedShips, cursorX, cursorY) = 0) {
+            let sinkedShipParts = sinkedShipParts + 1;
+            do setShip(sinkedShips, cursorX, cursorY, 1);
+        }
+
+        if (isShipSinked()) {
+            do drawSinkedShip();
+        } else {
+            do drawShipPart();
+        }
+
+        return true;
     }
 
     function void drawCell(int x, int y, int width, int height) {
