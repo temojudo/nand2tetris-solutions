@@ -1,0 +1,349 @@
+class Board {
+    field int topX, topY, numRows, numCols, cellSize;
+    field int cursorX, cursorY;
+    field int cursorCellDiff, shipCellDiff;
+    field int cursorSize, shipSize;
+    field Array grid;
+
+    constructor Board new(int x, int y, int rows, int cols, int size) {
+        var int i, j;
+        var int currX, currY;
+
+        do initBoardParams(x, y, rows, cols, size);
+
+        let i = 0;
+        while (i < rows) {
+            let j = 0;
+            while (j < cols) {
+                let currX = x + (i * size);
+                let currY = y + (j * size);
+
+                do Board.drawCell(currX, currY, size, size);
+                let j = j + 1;
+            }
+
+            let i = i + 1;
+        }
+
+        return this;
+    }
+
+    method void dispose() {
+        do disposeGrid(grid);
+        return;
+    }
+
+    method void disposeGrid(Array grid) {
+        var Array rowGrid;
+        var int i;
+
+        let i = 0;
+        while (i < numRows) {
+            let rowGrid = grid[i];
+            do rowGrid.dispose();
+            let i = i + 1;
+        }
+
+        return;
+    }
+
+    method void initBoardParams(int x, int y, int rows, int cols, int size) {
+        let topX           = x;
+        let topY           = y;
+        let numRows        = rows;
+        let numCols        = cols;
+        let cellSize       = size;
+        let cursorX        = -1;
+        let cursorY        = -1;
+        let cursorCellDiff = 1;
+        let shipCellDiff   = 2;
+        let cursorSize     = cellSize - (2 * cursorCellDiff);
+        let shipSize       = cellSize - (2 * shipCellDiff);
+        let grid           = Array.new(numRows);
+
+        do initGrid(grid);
+        return;
+    }
+
+    method void initGrid(Array grid) {
+        var Array rowGrid;
+        var int i, j;
+
+        let i = 0;
+        while (i < numRows) {
+            let rowGrid = Array.new(numCols);
+            
+            let j = 0;
+            while (j < numCols) {
+                let rowGrid[j] = 0;
+                let j = j + 1;
+            }
+
+            let grid[i] = rowGrid;
+            let i = i + 1;
+        }
+
+        return;
+    }
+
+    method int getShip(Array grid, int i, int j) {
+        var Array rowGrid;
+        let rowGrid = grid[i];
+
+        return rowGrid[j];
+    }
+
+    method void setShip(Array grid, int i, int j, int value) {
+        var Array rowGrid;
+        let rowGrid = grid[i];
+
+        let rowGrid[j] = value;
+        return;
+    }
+
+    method void drawCursor() {
+        var int x, y;
+
+        let x = topX + (cursorX * cellSize) + cursorCellDiff;
+        let y = topY + (cursorY * cellSize) + cursorCellDiff;
+
+        do Board.drawCell(x, y, cursorSize, cursorSize);
+        return;
+    }
+
+    method void removeCursor() {
+        do Screen.setColor(false);
+        do drawCursor();
+        do Screen.setColor(true);
+        return;
+    }
+
+    method void setCursor(int i, int j) {
+        if ((cursorX > -1) | (cursorY > -1)) {
+            do removeCursor();
+        }
+
+        let cursorX = i;
+        let cursorY = j;
+        do drawCursor();
+        return;
+    }
+
+    method void moveUp() {
+        if (cursorY > 0) {
+            do setCursor(cursorX, cursorY - 1);
+        }
+        return;
+    }
+
+    method void moveDown() {
+        if (cursorY < (numRows - 1)) {
+            do setCursor(cursorX, cursorY + 1);
+        }
+        return;
+    }
+
+    method void moveRight() {
+        if (cursorX < (numCols - 1)) {
+            do setCursor(cursorX + 1, cursorY);
+        }
+        return;
+    }
+
+    method void moveLeft() {
+        if (cursorX > 0) {
+            do setCursor(cursorX - 1, cursorY);
+        }
+        return;
+    }
+
+    method void placeShip() {
+        var int x1, y1, x2, y2, ship;
+        var array rowGrid;
+
+        let ship = getShip(grid, cursorX, cursorY);
+        if (ship = 0) {
+            let ship = 1;
+        } else {
+            let ship = 0;
+        }
+
+        let x1 = topX + (cursorX * cellSize) + shipCellDiff;
+        let y1 = topY + (cursorY * cellSize) + shipCellDiff;
+
+        let x2 = x1 + shipSize;
+        let y2 = y1 + shipSize;
+
+        do Screen.setColor(ship = 1);
+        do Screen.drawRectangle(x1, y1, x2, y2);
+        do Screen.setColor(true);
+        
+        do setShip(grid, cursorX, cursorY, ship);
+        return;
+    }
+
+    method boolean findShipByLenHorizontal(Array checkedCells, int len) {
+        var int i, j;
+        var int ship, shipLen;
+
+        let i = 0;
+        while (i < numRows) {
+            let j = 0;
+            while (j < numCols) {
+                let ship = getShip(grid, i, j);
+                if ((ship > 0) & (getShip(checkedCells, i, j) = 0)) {
+                    let shipLen = shipLen + 1;
+                } else {
+                    let shipLen = 0;
+                }
+
+                if (shipLen = len) {
+                    while (len > 0) {
+                        do setShip(checkedCells, i, j, 1);
+                        let j   = j   - 1;
+                        let len = len - 1;
+                    }
+                    return true;
+                }
+
+                let j = j + 1;
+            }
+
+            let i = i + 1;
+        }
+
+        return false;
+    }
+
+    method boolean findShipByLenVertical(Array checkedCells, int len) {
+        var int i, j;
+        var int ship, shipLen;
+
+        let j = 0;
+        while (j < numCols) {
+            let i = 0;
+            while (i < numRows) {
+                let ship = getShip(grid, i, j);
+                if ((ship > 0) & (getShip(checkedCells, i, j) = 0)) {
+                    let shipLen = shipLen + 1;
+                } else {
+                    let shipLen = 0;
+                }
+
+                if (shipLen = len) {
+                    while (len > 0) {
+                        do setShip(checkedCells, i, j, 1);
+                        let i   = i   - 1;
+                        let len = len - 1;
+                    }
+                    return true;
+                }
+
+                let i = i + 1;
+            }
+
+            let j = j + 1;
+        }
+
+        return false;
+    }
+
+    method boolean findShipByLen(Array checkedCells, int len) {
+        if (findShipByLenHorizontal(checkedCells, len)) {
+            return true;
+        }
+
+        if (findShipByLenVertical(checkedCells, len)) {
+            return true;
+        }
+        
+        return false;
+    }
+
+    method int getNumShips(Array grid) {
+        var int res, i, j;
+
+        let res = 0;
+        let i   = 0;
+
+        while (i < numRows) {
+            let j = 0;
+            while (j < numCols) {
+                if (getShip(grid, i, j) = 1) {
+                    let res = res + 1;
+                }
+                let j = j + 1;
+            }
+            let i = i + 1;
+        }
+
+        return res;
+    }
+
+    method boolean haveCommonCorner(int i1, int j1, int i2, int j2) {
+        if ((i2 < 0) | (i2 > (numCols - 1))) { return false; }
+        if ((j2 < 0) | (j2 > (numRows - 1))) { return false; }
+
+        return ((getShip(grid, i1, j1) = 1) & (getShip(grid, i2, j2) = 1));
+    }
+    
+    method boolean containsCommonCorner() {
+        var int i, j;
+
+        let i = 0;
+        while (i < numRows) {
+            let j = 0;
+            while (j < numCols) {
+                if (haveCommonCorner(i, j, i - 1, j - 1)) { return true; }
+                if (haveCommonCorner(i, j, i - 1, j + 1)) { return true; }
+                if (haveCommonCorner(i, j, i + 1, j - 1)) { return true; }
+                if (haveCommonCorner(i, j, i + 1, j + 1)) { return true; }
+                
+                let j = j + 1;
+            }
+            let i = i + 1;
+        }
+
+        return false;
+    }
+
+    method boolean checkBoard(Array checkedCells) {
+        var int numShips;
+
+        if (~(getNumShips(grid) = 18)) { return false; }
+        if (containsCommonCorner())    { return false; }
+
+        if (~findShipByLen(checkedCells, 5)) { return false; }
+        if (~findShipByLen(checkedCells, 4)) { return false; }
+        if (~findShipByLen(checkedCells, 3)) { return false; }
+        if (~findShipByLen(checkedCells, 2)) { return false; }
+        if (~findShipByLen(checkedCells, 2)) { return false; }
+        if (~findShipByLen(checkedCells, 1)) { return false; }
+        if (~findShipByLen(checkedCells, 1)) { return false; }
+
+        return true;
+    }
+
+    method boolean validateBoard() {
+        var boolean res;
+        var Array checkedCells;
+
+        let checkedCells = Array.new(numRows);
+        do initGrid(checkedCells);
+
+        let res = checkBoard(checkedCells);
+        do disposeGrid(checkedCells);
+
+        return res;
+    }
+
+    function void drawCell(int x, int y, int width, int height) {
+        do Screen.drawLine(x, y, x + width, y);
+        do Screen.drawLine(x, y, x, y + height);
+        do Screen.drawLine(x, y + height, x + width, y + height);
+        do Screen.drawLine(x + width, y, x + width, y + height);
+
+        return;
+    }
+
+}

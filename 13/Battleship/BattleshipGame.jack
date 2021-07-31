@@ -1,0 +1,84 @@
+class BattleshipGame {
+    field Board playerBoard;
+    field Board computerBoard;
+    field int command;
+
+    constructor BattleshipGame new() {
+        let playerBoard   = Board.new(37,  28, 10, 10, 20);
+        let computerBoard = Board.new(274, 28, 10, 10, 20);
+
+        do playerBoard.setCursor(0, 0);
+
+        return this;
+    }
+
+    method void dispose() {
+        do playerBoard.dispose();
+        do computerBoard.dispose();
+        
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    method void drawMessage(String message) {
+        do Screen.setColor(false);
+
+        do Screen.drawRectangle(0, 0, 256, 27);
+        do Output.moveCursor(0, 0);
+        do Output.printString(message);
+        
+        do Screen.setColor(true);
+
+        do message.dispose();
+        return;
+    }
+
+    method void executeCommand() {
+        if (command = 0) { do playerBoard.placeShip(); }
+        if (command = 1) { do playerBoard.moveUp(); }
+        if (command = 2) { do playerBoard.moveDown(); }
+        if (command = 3) { do playerBoard.moveLeft(); }
+        if (command = 4) { do playerBoard.moveRight(); }
+
+        do Sys.wait(4);  // delays the next movement
+        return;
+    }
+
+    method void run() {
+        var char key;  // the key currently pressed by the user
+        var boolean exit, validate;
+        let exit = false;
+        
+        while (~exit) {
+            // waits for a key to be pressed
+            while (key = 0) {
+                let key = Keyboard.keyPressed();
+            }
+            
+            let command = -1;
+
+            if (key = 81)  { let exit = true; }   // q key          
+            if (key = 128) { let command = 0; }   // enter key
+            if (key = 131) { let command = 1; }   // up arrow
+            if (key = 133) { let command = 2; }   // down arrow
+            if (key = 130) { let command = 3; }   // left arrow
+            if (key = 132) { let command = 4; }   // right arrow
+
+            if (key = 83) { // s key 
+                let validate = playerBoard.validateBoard();
+                if (validate) {
+                    do drawMessage("Valid Board");
+                } else {
+                    do drawMessage("Invalid Board");
+                }
+            }
+
+            // waits for the key to be released
+            while (~(key = 0)) {
+                let key = Keyboard.keyPressed();
+            }
+            do executeCommand();
+        }
+        return;
+    }
+}

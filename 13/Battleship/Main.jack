@@ -1,0 +1,11 @@
+class Main {
+    function void main() {
+        var BattleshipGame game;
+        let game = BattleshipGame.new();
+
+        do game.run();
+        do game.dispose();
+        
+        return;
+    }
+}
