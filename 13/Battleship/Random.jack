@@ -39,16 +39,8 @@ class Random {
     }
 
     function int getShift() {
-        var int temp;
-
         let calledTime = calledTime + 1;
-        let temp = calledTime;
-        
-        while(temp > 9) {
-            let temp = temp - 9;
-        }
-
-        return temp;
+        return (calledTime - (calledTime / 9));
     }
 
 }
