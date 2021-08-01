@@ -472,6 +472,15 @@ call Board.drawCursor 1
 pop temp 0
 push constant 0
 return
+function Board.setCursorCoordinates 0
+push argument 0
+pop pointer 0
+push argument 1
+pop this 5
+push argument 2
+pop this 6
+push constant 0
+return
 function Board.moveUp 0
 push argument 0
 pop pointer 0
@@ -1350,10 +1359,14 @@ add
 push constant 1
 add
 push argument 2
-call Board.setCursor 3
+call Board.setCursorCoordinates 3
 pop temp 0
 push pointer 0
-call Board.placeShip 1
+push this 14
+push this 5
+push this 6
+push constant 1
+call Board.setShip 5
 pop temp 0
 push argument 4
 push constant 1
@@ -1378,10 +1391,14 @@ push argument 1
 push local 0
 sub
 push argument 2
-call Board.setCursor 3
+call Board.setCursorCoordinates 3
 pop temp 0
 push pointer 0
-call Board.placeShip 1
+push this 14
+push this 5
+push this 6
+push constant 1
+call Board.setShip 5
 pop temp 0
 push argument 4
 push constant 1
@@ -1417,10 +1434,14 @@ push local 0
 add
 push constant 1
 add
-call Board.setCursor 3
+call Board.setCursorCoordinates 3
 pop temp 0
 push pointer 0
-call Board.placeShip 1
+push this 14
+push this 5
+push this 6
+push constant 1
+call Board.setShip 5
 pop temp 0
 push argument 4
 push constant 1
@@ -1445,10 +1466,14 @@ push argument 1
 push argument 2
 push local 0
 sub
-call Board.setCursor 3
+call Board.setCursorCoordinates 3
 pop temp 0
 push pointer 0
-call Board.placeShip 1
+push this 14
+push this 5
+push this 6
+push constant 1
+call Board.setShip 5
 pop temp 0
 push argument 4
 push constant 1
@@ -1596,6 +1621,9 @@ function Board.placeComputerShips 0
 push argument 0
 pop pointer 0
 push pointer 0
+call Board.removeCursor 1
+pop temp 0
+push pointer 0
 push constant 5
 call Board.placeComputerShipWithLen 2
 pop temp 0
@@ -1622,9 +1650,6 @@ pop temp 0
 push pointer 0
 push constant 1
 call Board.placeComputerShipWithLen 2
-pop temp 0
-push pointer 0
-call Board.removeCursor 1
 pop temp 0
 push constant 0
 return
@@ -2928,11 +2953,13 @@ push local 1
 pop this 6
 push constant 0
 return
+goto IF_END1
 label IF_FALSE1
 push argument 1
 push constant 1
 sub
 pop argument 1
+label IF_END1
 label IF_FALSE0
 push local 1
 push constant 1
@@ -2977,30 +3004,99 @@ eq
 if-goto IF_TRUE1
 goto IF_FALSE1
 label IF_TRUE1
+push pointer 0
+push this 15
+push this 5
+push this 6
+push constant 1
+sub
+call Board.getShip 4
+push constant 2
+eq
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push this 13
+push constant 1
+add
+pop this 13
+push pointer 0
+call Board.chooseNextCell 1
+pop temp 0
+goto IF_END2
+label IF_FALSE2
 push this 6
 push constant 1
 sub
 pop this 6
+label IF_END2
 goto IF_END1
 label IF_FALSE1
 push this 13
 push constant 3
 eq
-if-goto IF_TRUE2
-goto IF_FALSE2
-label IF_TRUE2
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push pointer 0
+push this 15
+push this 5
+push constant 1
+sub
+push this 6
+call Board.getShip 4
+push constant 2
+eq
+push this 5
+push constant 0
+eq
+or
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push this 13
+push constant 1
+add
+pop this 13
+push pointer 0
+call Board.chooseNextCell 1
+pop temp 0
+goto IF_END4
+label IF_FALSE4
 push this 5
 push constant 1
 sub
 pop this 5
-goto IF_END2
-label IF_FALSE2
+label IF_END4
+goto IF_END3
+label IF_FALSE3
 push this 13
 push constant 2
 eq
-if-goto IF_TRUE3
-goto IF_FALSE3
-label IF_TRUE3
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
+push pointer 0
+push this 15
+push this 5
+push this 6
+push constant 1
+add
+call Board.getShip 4
+push constant 2
+eq
+if-goto IF_TRUE6
+goto IF_FALSE6
+label IF_TRUE6
+push this 13
+push constant 1
+add
+pop this 13
+push pointer 0
+call Board.chooseNextCell 1
+pop temp 0
+goto IF_END6
+label IF_FALSE6
 push this 6
 push constant 1
 add
@@ -3021,8 +3117,9 @@ add
 pop this 6
 goto WHILE_EXP0
 label WHILE_END0
-goto IF_END3
-label IF_FALSE3
+label IF_END6
+goto IF_END5
+label IF_FALSE5
 push this 5
 push constant 1
 add
@@ -3043,8 +3140,8 @@ add
 pop this 5
 goto WHILE_EXP1
 label WHILE_END1
+label IF_END5
 label IF_END3
-label IF_END2
 label IF_END1
 label IF_END0
 push constant 0
@@ -3071,7 +3168,7 @@ return
 function Board.sinkShipByComputer 3
 push argument 0
 pop pointer 0
-push constant 1000
+push constant 800
 call Sys.wait 1
 pop temp 0
 push this 5
