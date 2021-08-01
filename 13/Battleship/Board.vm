@@ -1,5 +1,5 @@
 function Board.new 4
-push constant 15
+push constant 16
 call Memory.alloc 1
 pop pointer 0
 push pointer 0
@@ -62,11 +62,11 @@ function Board.dispose 0
 push argument 0
 pop pointer 0
 push pointer 0
-push this 13
+push this 14
 call Board.disposeGrid 2
 pop temp 0
 push pointer 0
-push this 14
+push this 15
 call Board.disposeGrid 2
 pop temp 0
 push constant 0
@@ -138,18 +138,20 @@ push constant 0
 pop this 11
 push constant 18
 pop this 12
-push this 2
-call Array.new 1
+push constant 0
 pop this 13
 push this 2
 call Array.new 1
 pop this 14
+push this 2
+call Array.new 1
+pop this 15
 push pointer 0
-push this 13
+push this 14
 call Board.initGrid 2
 pop temp 0
 push pointer 0
-push this 14
+push this 15
 call Board.initGrid 2
 pop temp 0
 push constant 0
@@ -209,6 +211,32 @@ return
 function Board.getShip 1
 push argument 0
 pop pointer 0
+push argument 2
+push constant 0
+lt
+push argument 2
+push this 2
+push constant 1
+sub
+gt
+or
+push argument 3
+push constant 0
+lt
+or
+push argument 3
+push this 3
+push constant 1
+sub
+gt
+or
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 1
+neg
+return
+label IF_FALSE0
 push argument 2
 push argument 1
 add
@@ -528,7 +556,7 @@ function Board.placeShip 6
 push argument 0
 pop pointer 0
 push pointer 0
-push this 13
+push this 14
 push this 5
 push this 6
 call Board.getShip 4
@@ -586,7 +614,7 @@ not
 call Screen.setColor 1
 pop temp 0
 push pointer 0
-push this 13
+push this 14
 push this 5
 push this 6
 push local 4
@@ -614,7 +642,7 @@ lt
 not
 if-goto WHILE_END1
 push pointer 0
-push this 13
+push this 14
 push local 0
 push local 1
 call Board.getShip 4
@@ -709,7 +737,7 @@ lt
 not
 if-goto WHILE_END1
 push pointer 0
-push this 13
+push this 14
 push local 0
 push local 1
 call Board.getShip 4
@@ -895,14 +923,14 @@ push constant 0
 return
 label IF_FALSE1
 push pointer 0
-push this 13
+push this 14
 push argument 1
 push argument 2
 call Board.getShip 4
 push constant 1
 eq
 push pointer 0
-push this 13
+push this 14
 push argument 3
 push argument 4
 call Board.getShip 4
@@ -1015,7 +1043,7 @@ function Board.checkBoard 1
 push argument 0
 pop pointer 0
 push pointer 0
-push this 13
+push this 14
 call Board.getNumShips 2
 push this 12
 eq
@@ -1147,12 +1175,12 @@ gt
 not
 if-goto WHILE_END0
 push pointer 0
-push this 13
+push this 14
 push argument 1
 push argument 2
 call Board.getShip 4
 push pointer 0
-push this 13
+push this 14
 push argument 1
 push argument 2
 call Board.hasNoNeighbour 4
@@ -1188,12 +1216,12 @@ lt
 not
 if-goto WHILE_END0
 push pointer 0
-push this 13
+push this 14
 push argument 1
 push argument 2
 call Board.getShip 4
 push pointer 0
-push this 13
+push this 14
 push argument 1
 push argument 2
 call Board.hasNoNeighbour 4
@@ -1230,12 +1258,12 @@ gt
 not
 if-goto WHILE_END0
 push pointer 0
-push this 13
+push this 14
 push argument 1
 push argument 2
 call Board.getShip 4
 push pointer 0
-push this 13
+push this 14
 push argument 1
 push argument 2
 call Board.hasNoNeighbour 4
@@ -1271,12 +1299,12 @@ lt
 not
 if-goto WHILE_END0
 push pointer 0
-push this 13
+push this 14
 push argument 1
 push argument 2
 call Board.getShip 4
 push pointer 0
-push this 13
+push this 14
 push argument 1
 push argument 2
 call Board.hasNoNeighbour 4
@@ -1457,14 +1485,14 @@ pop local 1
 push constant 0
 pop local 3
 push pointer 0
-push this 13
+push this 14
 push local 0
 push local 1
 call Board.getShip 4
 push constant 0
 eq
 push pointer 0
-push this 13
+push this 14
 push local 0
 push local 1
 call Board.hasNoNeighbour 4
@@ -1908,7 +1936,7 @@ lt
 not
 if-goto WHILE_END0
 push pointer 0
-push this 14
+push this 15
 push local 0
 push local 1
 call Board.getShip 4
@@ -1947,7 +1975,7 @@ gt
 not
 if-goto WHILE_END1
 push pointer 0
-push this 14
+push this 15
 push local 0
 push local 1
 call Board.getShip 4
@@ -1985,7 +2013,7 @@ lt
 not
 if-goto WHILE_END2
 push pointer 0
-push this 14
+push this 15
 push local 0
 push local 1
 call Board.getShip 4
@@ -2024,7 +2052,7 @@ gt
 not
 if-goto WHILE_END3
 push pointer 0
-push this 14
+push this 15
 push local 0
 push local 1
 call Board.getShip 4
@@ -2051,7 +2079,410 @@ goto WHILE_EXP3
 label WHILE_END3
 push constant 0
 return
-function Board.isShipSinked 3
+function Board.markNeighbourNotToVisit 0
+push argument 0
+pop pointer 0
+push pointer 0
+push this 15
+push argument 1
+push constant 0
+add
+push argument 2
+push constant 0
+add
+call Board.getShip 4
+push constant 0
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+push this 15
+push argument 1
+push constant 0
+add
+push argument 2
+push constant 0
+add
+push constant 2
+call Board.setShip 5
+pop temp 0
+label IF_FALSE0
+push pointer 0
+push this 15
+push argument 1
+push constant 0
+add
+push argument 2
+push constant 1
+add
+call Board.getShip 4
+push constant 0
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push pointer 0
+push this 15
+push argument 1
+push constant 0
+add
+push argument 2
+push constant 1
+add
+push constant 2
+call Board.setShip 5
+pop temp 0
+label IF_FALSE1
+push pointer 0
+push this 15
+push argument 1
+push constant 0
+add
+push argument 2
+push constant 1
+sub
+call Board.getShip 4
+push constant 0
+eq
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push pointer 0
+push this 15
+push argument 1
+push constant 0
+add
+push argument 2
+push constant 1
+sub
+push constant 2
+call Board.setShip 5
+pop temp 0
+label IF_FALSE2
+push pointer 0
+push this 15
+push argument 1
+push constant 1
+add
+push argument 2
+push constant 0
+add
+call Board.getShip 4
+push constant 0
+eq
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push pointer 0
+push this 15
+push argument 1
+push constant 1
+add
+push argument 2
+push constant 0
+add
+push constant 2
+call Board.setShip 5
+pop temp 0
+label IF_FALSE3
+push pointer 0
+push this 15
+push argument 1
+push constant 1
+add
+push argument 2
+push constant 1
+add
+call Board.getShip 4
+push constant 0
+eq
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push pointer 0
+push this 15
+push argument 1
+push constant 1
+add
+push argument 2
+push constant 1
+add
+push constant 2
+call Board.setShip 5
+pop temp 0
+label IF_FALSE4
+push pointer 0
+push this 15
+push argument 1
+push constant 1
+add
+push argument 2
+push constant 1
+sub
+call Board.getShip 4
+push constant 0
+eq
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
+push pointer 0
+push this 15
+push argument 1
+push constant 1
+add
+push argument 2
+push constant 1
+sub
+push constant 2
+call Board.setShip 5
+pop temp 0
+label IF_FALSE5
+push pointer 0
+push this 15
+push argument 1
+push constant 1
+sub
+push argument 2
+push constant 0
+add
+call Board.getShip 4
+push constant 0
+eq
+if-goto IF_TRUE6
+goto IF_FALSE6
+label IF_TRUE6
+push pointer 0
+push this 15
+push argument 1
+push constant 1
+sub
+push argument 2
+push constant 0
+add
+push constant 2
+call Board.setShip 5
+pop temp 0
+label IF_FALSE6
+push pointer 0
+push this 15
+push argument 1
+push constant 1
+sub
+push argument 2
+push constant 1
+add
+call Board.getShip 4
+push constant 0
+eq
+if-goto IF_TRUE7
+goto IF_FALSE7
+label IF_TRUE7
+push pointer 0
+push this 15
+push argument 1
+push constant 1
+sub
+push argument 2
+push constant 1
+add
+push constant 2
+call Board.setShip 5
+pop temp 0
+label IF_FALSE7
+push pointer 0
+push this 15
+push argument 1
+push constant 1
+sub
+push argument 2
+push constant 1
+sub
+call Board.getShip 4
+push constant 0
+eq
+if-goto IF_TRUE8
+goto IF_FALSE8
+label IF_TRUE8
+push pointer 0
+push this 15
+push argument 1
+push constant 1
+sub
+push argument 2
+push constant 1
+sub
+push constant 2
+call Board.setShip 5
+pop temp 0
+label IF_FALSE8
+push constant 0
+return
+function Board.markNeighboursNotToVisit 2
+push argument 0
+pop pointer 0
+push pointer 0
+push this 5
+push this 6
+call Board.markNeighbourNotToVisit 3
+pop temp 0
+push this 5
+push constant 1
+add
+pop local 0
+push this 6
+pop local 1
+label WHILE_EXP0
+push local 0
+push this 2
+lt
+not
+if-goto WHILE_END0
+push pointer 0
+push this 15
+push local 0
+push local 1
+call Board.getShip 4
+push constant 1
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+push local 0
+push local 1
+call Board.markNeighbourNotToVisit 3
+pop temp 0
+goto IF_END0
+label IF_FALSE0
+push this 2
+pop local 0
+label IF_END0
+push local 0
+push constant 1
+add
+pop local 0
+goto WHILE_EXP0
+label WHILE_END0
+push this 5
+push constant 1
+sub
+pop local 0
+push this 6
+pop local 1
+label WHILE_EXP1
+push local 0
+push constant 1
+neg
+gt
+not
+if-goto WHILE_END1
+push pointer 0
+push this 15
+push local 0
+push local 1
+call Board.getShip 4
+push constant 1
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push pointer 0
+push local 0
+push local 1
+call Board.markNeighbourNotToVisit 3
+pop temp 0
+goto IF_END1
+label IF_FALSE1
+push constant 0
+pop local 0
+label IF_END1
+push local 0
+push constant 1
+sub
+pop local 0
+goto WHILE_EXP1
+label WHILE_END1
+push this 5
+pop local 0
+push this 6
+push constant 1
+add
+pop local 1
+label WHILE_EXP2
+push local 1
+push this 3
+lt
+not
+if-goto WHILE_END2
+push pointer 0
+push this 15
+push local 0
+push local 1
+call Board.getShip 4
+push constant 1
+eq
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push pointer 0
+push local 0
+push local 1
+call Board.markNeighbourNotToVisit 3
+pop temp 0
+goto IF_END2
+label IF_FALSE2
+push this 3
+pop local 1
+label IF_END2
+push local 1
+push constant 1
+add
+pop local 1
+goto WHILE_EXP2
+label WHILE_END2
+push this 5
+pop local 0
+push this 6
+push constant 1
+sub
+pop local 1
+label WHILE_EXP3
+push local 1
+push constant 1
+neg
+gt
+not
+if-goto WHILE_END3
+push pointer 0
+push this 15
+push local 0
+push local 1
+call Board.getShip 4
+push constant 1
+eq
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push pointer 0
+push local 0
+push local 1
+call Board.markNeighbourNotToVisit 3
+pop temp 0
+goto IF_END3
+label IF_FALSE3
+push constant 0
+pop local 1
+label IF_END3
+push local 1
+push constant 1
+sub
+pop local 1
+goto WHILE_EXP3
+label WHILE_END3
+push constant 0
+return
+function Board.isShipSinked 4
 push argument 0
 pop pointer 0
 push constant 0
@@ -2066,17 +2497,19 @@ not
 not
 if-goto WHILE_END0
 push pointer 0
-push this 14
+push this 15
 push local 1
 push local 2
 call Board.getShip 4
+pop local 3
+push local 3
 push constant 0
 eq
 if-goto IF_TRUE0
 goto IF_FALSE0
 label IF_TRUE0
 push pointer 0
-push this 13
+push this 14
 push local 1
 push local 2
 call Board.getShip 4
@@ -2093,7 +2526,19 @@ push constant 0
 not
 pop local 0
 label IF_END1
+goto IF_END0
 label IF_FALSE0
+push local 3
+push constant 2
+eq
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push constant 0
+not
+pop local 0
+label IF_FALSE2
+label IF_END0
 push local 1
 push constant 1
 add
@@ -2103,13 +2548,13 @@ push this 2
 push constant 1
 sub
 gt
-if-goto IF_TRUE2
-goto IF_FALSE2
-label IF_TRUE2
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
 push constant 0
 not
 pop local 0
-label IF_FALSE2
+label IF_FALSE3
 goto WHILE_EXP0
 label WHILE_END0
 push constant 0
@@ -2124,34 +2569,48 @@ not
 not
 if-goto WHILE_END1
 push pointer 0
-push this 14
+push this 15
 push local 1
 push local 2
 call Board.getShip 4
+pop local 3
+push local 3
 push constant 0
 eq
-if-goto IF_TRUE3
-goto IF_FALSE3
-label IF_TRUE3
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
 push pointer 0
-push this 13
+push this 14
 push local 1
 push local 2
 call Board.getShip 4
 push constant 1
 eq
-if-goto IF_TRUE4
-goto IF_FALSE4
-label IF_TRUE4
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
 push constant 0
 return
-goto IF_END4
-label IF_FALSE4
+goto IF_END5
+label IF_FALSE5
 push constant 0
 not
 pop local 0
+label IF_END5
+goto IF_END4
+label IF_FALSE4
+push local 3
+push constant 2
+eq
+if-goto IF_TRUE6
+goto IF_FALSE6
+label IF_TRUE6
+push constant 0
+not
+pop local 0
+label IF_FALSE6
 label IF_END4
-label IF_FALSE3
 push local 1
 push constant 1
 sub
@@ -2159,13 +2618,13 @@ pop local 1
 push local 1
 push constant 0
 lt
-if-goto IF_TRUE5
-goto IF_FALSE5
-label IF_TRUE5
+if-goto IF_TRUE7
+goto IF_FALSE7
+label IF_TRUE7
 push constant 0
 not
 pop local 0
-label IF_FALSE5
+label IF_FALSE7
 goto WHILE_EXP1
 label WHILE_END1
 push constant 0
@@ -2180,34 +2639,48 @@ not
 not
 if-goto WHILE_END2
 push pointer 0
-push this 14
+push this 15
 push local 1
 push local 2
 call Board.getShip 4
+pop local 3
+push local 3
 push constant 0
 eq
-if-goto IF_TRUE6
-goto IF_FALSE6
-label IF_TRUE6
+if-goto IF_TRUE8
+goto IF_FALSE8
+label IF_TRUE8
 push pointer 0
-push this 13
+push this 14
 push local 1
 push local 2
 call Board.getShip 4
 push constant 1
 eq
-if-goto IF_TRUE7
-goto IF_FALSE7
-label IF_TRUE7
+if-goto IF_TRUE9
+goto IF_FALSE9
+label IF_TRUE9
 push constant 0
 return
-goto IF_END7
-label IF_FALSE7
+goto IF_END9
+label IF_FALSE9
 push constant 0
 not
 pop local 0
-label IF_END7
-label IF_FALSE6
+label IF_END9
+goto IF_END8
+label IF_FALSE8
+push local 3
+push constant 2
+eq
+if-goto IF_TRUE10
+goto IF_FALSE10
+label IF_TRUE10
+push constant 0
+not
+pop local 0
+label IF_FALSE10
+label IF_END8
 push local 2
 push constant 1
 add
@@ -2217,13 +2690,13 @@ push this 3
 push constant 1
 sub
 gt
-if-goto IF_TRUE8
-goto IF_FALSE8
-label IF_TRUE8
+if-goto IF_TRUE11
+goto IF_FALSE11
+label IF_TRUE11
 push constant 0
 not
 pop local 0
-label IF_FALSE8
+label IF_FALSE11
 goto WHILE_EXP2
 label WHILE_END2
 push constant 0
@@ -2238,34 +2711,48 @@ not
 not
 if-goto WHILE_END3
 push pointer 0
-push this 14
+push this 15
 push local 1
 push local 2
 call Board.getShip 4
+pop local 3
+push local 3
 push constant 0
 eq
-if-goto IF_TRUE9
-goto IF_FALSE9
-label IF_TRUE9
+if-goto IF_TRUE12
+goto IF_FALSE12
+label IF_TRUE12
 push pointer 0
-push this 13
+push this 14
 push local 1
 push local 2
 call Board.getShip 4
 push constant 1
 eq
-if-goto IF_TRUE10
-goto IF_FALSE10
-label IF_TRUE10
+if-goto IF_TRUE13
+goto IF_FALSE13
+label IF_TRUE13
 push constant 0
 return
-goto IF_END10
-label IF_FALSE10
+goto IF_END13
+label IF_FALSE13
 push constant 0
 not
 pop local 0
-label IF_END10
-label IF_FALSE9
+label IF_END13
+goto IF_END12
+label IF_FALSE12
+push local 3
+push constant 2
+eq
+if-goto IF_TRUE14
+goto IF_FALSE14
+label IF_TRUE14
+push constant 0
+not
+pop local 0
+label IF_FALSE14
+label IF_END12
 push local 2
 push constant 1
 sub
@@ -2273,13 +2760,13 @@ pop local 2
 push local 2
 push constant 0
 lt
-if-goto IF_TRUE11
-goto IF_FALSE11
-label IF_TRUE11
+if-goto IF_TRUE15
+goto IF_FALSE15
+label IF_TRUE15
 push constant 0
 not
 pop local 0
-label IF_FALSE11
+label IF_FALSE15
 goto WHILE_EXP3
 label WHILE_END3
 push constant 0
@@ -2289,7 +2776,7 @@ function Board.markPlace 0
 push argument 0
 pop pointer 0
 push pointer 0
-push this 13
+push this 14
 push this 5
 push this 6
 call Board.getShip 4
@@ -2301,11 +2788,18 @@ label IF_TRUE0
 push pointer 0
 call Board.drawMissCell 1
 pop temp 0
+push pointer 0
+push this 15
+push this 5
+push this 6
+push constant 2
+call Board.setShip 5
+pop temp 0
 push constant 0
 return
 label IF_FALSE0
 push pointer 0
-push this 14
+push this 15
 push this 5
 push this 6
 call Board.getShip 4
@@ -2319,7 +2813,7 @@ push constant 1
 add
 pop this 11
 push pointer 0
-push this 14
+push this 15
 push this 5
 push this 6
 push constant 1
@@ -2343,6 +2837,331 @@ label IF_END2
 push constant 0
 not
 return
+function Board.getEmptySpacesInSinkedShipsGrid 3
+push argument 0
+pop pointer 0
+push constant 0
+pop local 0
+push constant 0
+pop local 1
+label WHILE_EXP0
+push local 1
+push this 2
+lt
+not
+if-goto WHILE_END0
+push constant 0
+pop local 2
+label WHILE_EXP1
+push local 2
+push this 3
+lt
+not
+if-goto WHILE_END1
+push pointer 0
+push this 15
+push local 1
+push local 2
+call Board.getShip 4
+push constant 0
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push local 0
+push constant 1
+add
+pop local 0
+label IF_FALSE0
+push local 2
+push constant 1
+add
+pop local 2
+goto WHILE_EXP1
+label WHILE_END1
+push local 1
+push constant 1
+add
+pop local 1
+goto WHILE_EXP0
+label WHILE_END0
+push local 0
+return
+function Board.getCoordinatesForEmptyMember 2
+push argument 0
+pop pointer 0
+push constant 0
+pop local 0
+label WHILE_EXP0
+push local 0
+push this 2
+lt
+not
+if-goto WHILE_END0
+push constant 0
+pop local 1
+label WHILE_EXP1
+push local 1
+push this 3
+lt
+not
+if-goto WHILE_END1
+push pointer 0
+push this 15
+push local 0
+push local 1
+call Board.getShip 4
+push constant 0
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push argument 1
+push constant 0
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push local 0
+pop this 5
+push local 1
+pop this 6
+push constant 0
+return
+label IF_FALSE1
+push argument 1
+push constant 1
+sub
+pop argument 1
+label IF_FALSE0
+push local 1
+push constant 1
+add
+pop local 1
+goto WHILE_EXP1
+label WHILE_END1
+push local 0
+push constant 1
+add
+pop local 0
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return
+function Board.chooseNextCell 2
+push argument 0
+pop pointer 0
+push this 13
+push constant 0
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+call Board.getEmptySpacesInSinkedShipsGrid 1
+pop local 0
+push local 0
+push constant 1
+sub
+call Random.randRange 1
+pop local 1
+push pointer 0
+push local 1
+call Board.getCoordinatesForEmptyMember 2
+pop temp 0
+goto IF_END0
+label IF_FALSE0
+push this 13
+push constant 1
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push this 6
+push constant 1
+sub
+pop this 6
+goto IF_END1
+label IF_FALSE1
+push this 13
+push constant 3
+eq
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push this 5
+push constant 1
+sub
+pop this 5
+goto IF_END2
+label IF_FALSE2
+push this 13
+push constant 2
+eq
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push this 6
+push constant 1
+add
+pop this 6
+label WHILE_EXP0
+push pointer 0
+push this 15
+push this 5
+push this 6
+call Board.getShip 4
+push constant 1
+eq
+not
+if-goto WHILE_END0
+push this 6
+push constant 1
+add
+pop this 6
+goto WHILE_EXP0
+label WHILE_END0
+goto IF_END3
+label IF_FALSE3
+push this 5
+push constant 1
+add
+pop this 5
+label WHILE_EXP1
+push pointer 0
+push this 15
+push this 5
+push this 6
+call Board.getShip 4
+push constant 1
+eq
+not
+if-goto WHILE_END1
+push this 5
+push constant 1
+add
+pop this 5
+goto WHILE_EXP1
+label WHILE_END1
+label IF_END3
+label IF_END2
+label IF_END1
+label IF_END0
+push constant 0
+return
+function Board.isDirectionAtEdge 0
+push argument 0
+pop pointer 0
+push this 5
+push constant 0
+eq
+push this 13
+push constant 3
+eq
+and
+push this 6
+push constant 0
+eq
+push this 13
+push constant 1
+eq
+and
+or
+return
+function Board.sinkShipByComputer 3
+push argument 0
+pop pointer 0
+push constant 1000
+call Sys.wait 1
+pop temp 0
+push this 5
+pop local 1
+push this 6
+pop local 2
+push pointer 0
+call Board.chooseNextCell 1
+pop temp 0
+push pointer 0
+call Board.markPlace 1
+pop local 0
+push pointer 0
+call Board.isAllShipsSinked 1
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 0
+not
+return
+label IF_FALSE0
+push local 0
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push pointer 0
+call Board.isShipSinked 1
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push pointer 0
+call Board.markNeighboursNotToVisit 1
+pop temp 0
+push constant 0
+pop this 13
+goto IF_END2
+label IF_FALSE2
+push this 13
+push constant 0
+eq
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push constant 1
+pop this 13
+label IF_FALSE3
+push pointer 0
+call Board.isDirectionAtEdge 1
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push this 13
+push constant 1
+add
+pop this 13
+label IF_FALSE4
+label IF_END2
+push pointer 0
+call Board.sinkShipByComputer 1
+return
+goto IF_END1
+label IF_FALSE1
+push this 13
+push constant 0
+gt
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
+push local 1
+pop this 5
+push local 2
+pop this 6
+push this 13
+push constant 1
+add
+pop this 13
+label IF_FALSE5
+push pointer 0
+call Board.isDirectionAtEdge 1
+if-goto IF_TRUE6
+goto IF_FALSE6
+label IF_TRUE6
+push this 13
+push constant 1
+add
+pop this 13
+label IF_FALSE6
+push constant 0
+return
+label IF_END1
 function Board.drawCell 0
 push argument 0
 push argument 1

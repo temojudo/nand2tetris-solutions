@@ -143,7 +143,7 @@ class BattleshipGame {
         do drawMessage("Computer's turn");
         do Sys.wait(250);
 
-        return false;
+        return playerBoard.sinkShipByComputer();
     }
 
     method void startBattle() {

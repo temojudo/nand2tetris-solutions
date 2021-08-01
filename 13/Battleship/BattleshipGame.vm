@@ -603,7 +603,8 @@ pop temp 0
 push constant 250
 call Sys.wait 1
 pop temp 0
-push constant 0
+push this 0
+call Board.sinkShipByComputer 1
 return
 function BattleshipGame.startBattle 2
 push argument 0
