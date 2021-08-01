@@ -1,11 +1,29 @@
 class Main {
-    function void main() {
-        var BattleshipGame game;
-        let game = BattleshipGame.new();
 
-        do game.run();
-        do game.dispose();
+    function void main() {
+        var boolean exit;
+        var int key;
+        var BattleshipGame game;
         
+        let exit = false;
+        while (~exit) {
+            do Screen.clearScreen();
+
+            let game = BattleshipGame.new();
+            do game.run();
+            do game.dispose();
+
+            let key = 0;
+            while ((~(key = 32)) & (~(key = 81))) { // 'space' or 'q'
+                let key = Keyboard.keyPressed();
+            }
+
+            if (key = 81) { // 'q'
+                let exit = true;
+            }
+        }
+
         return;
     }
+
 }

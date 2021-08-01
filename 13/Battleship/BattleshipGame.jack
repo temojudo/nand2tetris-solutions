@@ -50,8 +50,6 @@ class BattleshipGame {
 
         let exit = false;
         let seed = 0;
-
-        do drawMessage("Choose 7 ships with length 1,1,2,2,3,4,5. Use 'enter' for place/displace ship parts and 's' to start game!");
         
         while (~exit) {
             // waits for a key to be pressed
@@ -162,10 +160,30 @@ class BattleshipGame {
         }
 
         if (playerWins) {
-            do drawMessage("Wow, You're Geniuos");
+            do drawMessage("Player Wins. Press space for new round or q for quit");
         } else {
-            do drawMessage("Maybe next time");
+            do drawMessage("Computer Wins. Press space for new round or q for quit");
         }
+
+        return;
+    }
+
+    method void drawInitInstructions() {
+        var String playerBoardTitle, computerBoardTitle;
+
+        let playerBoardTitle   = "Player's Board";
+        let computerBoardTitle = "Computer's Board";
+
+        do drawMessage("Choose 7 ships with length 1,1,2,2,3,4,5. Use 'enter' for place/displace ship parts and 's' to start game!");
+
+        do Output.moveCursor(21, 10);
+        do Output.printString(playerBoardTitle);
+
+        do Output.moveCursor(21, 39);
+        do Output.printString(computerBoardTitle);
+
+        do playerBoardTitle.dispose();
+        do computerBoardTitle.dispose();
 
         return;
     }
@@ -173,12 +191,14 @@ class BattleshipGame {
     method void run() {
         var int seed;
 
+        do drawInitInstructions();
+
         let seed = placePlayerShips();
-
         do Random.setSeed(seed);
-        do placeComputerShips();
 
+        do placeComputerShips();
         do startBattle();
+        
         return;
     }
 }
