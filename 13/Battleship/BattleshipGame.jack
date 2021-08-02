@@ -107,7 +107,7 @@ class BattleshipGame {
         var int key;
         
         do drawMessage("Player's turn");
-        do computerBoard.setCursor(0, 0);
+        do computerBoard.drawCursor();
 
         let exit = false;
         while (~exit) {
@@ -152,6 +152,7 @@ class BattleshipGame {
         let playerWins   = false;
         let computerWins = false;
 
+        do computerBoard.setCursor(0, 0);
         while ((~playerWins) & (~computerWins)) {
             let playerWins = doPlayerMoves();
             if (~playerWins) {
