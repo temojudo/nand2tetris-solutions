@@ -517,8 +517,8 @@ class Board {
             
             let emptySpace = 0;
             if ((getShip(grid, i, j) = 0) & hasNoNeighbour(grid, i, j)) {
-                let h = Random.randRange(1);
-                if (h = 0) {
+                let h = Random.randRange(10);
+                if (h > 4) {
                     let upLen      = getEmptySpaceUp(i, j - 1);
                     let downLen    = getEmptySpaceDown(i, j + 1);
                     let emptySpace = upLen + downLen + 1;
@@ -534,7 +534,7 @@ class Board {
             }
         }
 
-        if (h = 0) {
+        if (h > 4) {
             do placeComputerShipWithLenVertical(i, j, downLen, len);
         } else {
             do placeComputerShipWithLenHorizontal(i, j, rightLen, len);
@@ -925,7 +925,7 @@ class Board {
             do getCoordinatesForEmptyMember(randInt);
         } else {
             if (lastDirection = 1) { // up
-                if (getShip(sinkedShips, cursorX, cursorY - 1) = 2) {
+                if ((getShip(sinkedShips, cursorX, cursorY - 1) = 2) | (cursorY = 0)) {
                     let lastDirection = lastDirection + 1;
                     do chooseNextCell();
                 } else {
@@ -941,7 +941,7 @@ class Board {
                     }
                 } else {
                     if (lastDirection = 2) { // down
-                        if (getShip(sinkedShips, cursorX, cursorY + 1) = 2) {
+                        if ((getShip(sinkedShips, cursorX, cursorY + 1) = 2) | (cursorY = (numCols - 1))) {
                             let lastDirection = lastDirection + 1;
                             do chooseNextCell();
                         } else {

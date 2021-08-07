@@ -1148,12 +1148,6 @@ label IF_TRUE2
 push constant 0
 return
 label IF_FALSE2
-push constant 32
-call Output.printChar 1
-pop temp 0
-push constant 5
-call Output.printInt 1
-pop temp 0
 push pointer 0
 push argument 1
 push constant 4
@@ -1165,12 +1159,6 @@ label IF_TRUE3
 push constant 0
 return
 label IF_FALSE3
-push constant 32
-call Output.printChar 1
-pop temp 0
-push constant 4
-call Output.printInt 1
-pop temp 0
 push pointer 0
 push argument 1
 push constant 3
@@ -1182,12 +1170,6 @@ label IF_TRUE4
 push constant 0
 return
 label IF_FALSE4
-push constant 32
-call Output.printChar 1
-pop temp 0
-push constant 3
-call Output.printInt 1
-pop temp 0
 push pointer 0
 push argument 1
 push constant 2
@@ -1199,12 +1181,6 @@ label IF_TRUE5
 push constant 0
 return
 label IF_FALSE5
-push constant 32
-call Output.printChar 1
-pop temp 0
-push constant 2
-call Output.printInt 1
-pop temp 0
 push pointer 0
 push argument 1
 push constant 2
@@ -1216,12 +1192,6 @@ label IF_TRUE6
 push constant 0
 return
 label IF_FALSE6
-push constant 32
-call Output.printChar 1
-pop temp 0
-push constant 2
-call Output.printInt 1
-pop temp 0
 push pointer 0
 push argument 1
 push constant 1
@@ -1233,12 +1203,6 @@ label IF_TRUE7
 push constant 0
 return
 label IF_FALSE7
-push constant 32
-call Output.printChar 1
-pop temp 0
-push constant 1
-call Output.printInt 1
-pop temp 0
 push pointer 0
 push argument 1
 push constant 1
@@ -1627,12 +1591,12 @@ and
 if-goto IF_TRUE0
 goto IF_FALSE0
 label IF_TRUE0
-push constant 1
+push constant 10
 call Random.randRange 1
 pop local 2
 push local 2
-push constant 0
-eq
+push constant 5
+gt
 if-goto IF_TRUE1
 goto IF_FALSE1
 label IF_TRUE1
@@ -1695,8 +1659,8 @@ label IF_FALSE2
 goto WHILE_EXP0
 label WHILE_END0
 push local 2
-push constant 0
-eq
+push constant 5
+gt
 if-goto IF_TRUE3
 goto IF_FALSE3
 label IF_TRUE3
@@ -3115,6 +3079,10 @@ sub
 call Board.getShip 4
 push constant 2
 eq
+push this 6
+push constant 0
+eq
+or
 if-goto IF_TRUE2
 goto IF_FALSE2
 label IF_TRUE2
@@ -3187,6 +3155,12 @@ add
 call Board.getShip 4
 push constant 2
 eq
+push this 6
+push this 3
+push constant 1
+sub
+eq
+or
 if-goto IF_TRUE6
 goto IF_FALSE6
 label IF_TRUE6
